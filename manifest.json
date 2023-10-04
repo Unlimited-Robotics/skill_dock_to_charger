@@ -1,19 +1,24 @@
 {
-    "name": "",
+    "name": "dock_to_charger",
     "description": "",
-    "type": "",
-    "version" : "1.0.0",
-    "dependencies" : {
+    "type": "skill",
+    "version": "0.0.1",
+    "dependencies": {
         "pip": [],
-        "skills": []
+        "skills": [
+            {
+                "name": "approach_to_tags",
+                "version": "==2.0.0"
+            }
+        ]
     },
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "https://github.com/unlimitedrobotics-skills/dock_to_charger"
     },
     "license": "MIT",
     "author": {
-        "name": "",
-        "url": ""
+        "name": "Santiago Barragan",
+        "url": "santiago@unlimitedrobotics.com"
     }
 }
