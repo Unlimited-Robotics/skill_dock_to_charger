@@ -1,6 +1,5 @@
 from raya.application_base import RayaApplicationBase
 
-
 class RayaApplication(RayaApplicationBase):
 
     async def setup(self):
