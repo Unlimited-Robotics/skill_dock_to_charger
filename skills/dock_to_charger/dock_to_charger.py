@@ -41,6 +41,7 @@ class SkillDockToCharger(RayaFSMSkill):
     
     
     STATES = [
+        'SETUP_ACTIONS',
         'APPROACH_TO_CHARGER',
         'MOVE_FOWARD_TO_CHARGER',
         'TOUCH_CHARGER',
@@ -50,7 +51,7 @@ class SkillDockToCharger(RayaFSMSkill):
         'END',
     ]
 
-    INITIAL_STATE = 'APPROACH_TO_CHARGER'
+    INITIAL_STATE = 'SETUP_ACTIONS'
 
     END_STATES = [
         'END'
@@ -66,6 +67,8 @@ class SkillDockToCharger(RayaFSMSkill):
         self.lidar:LidarController = await self.get_controller('lidar')
         self.sensors:SensorsController = await self.get_controller('sensors')
         self.status:StatusController = await self.get_controller('status')
+        
+        # self._check_charger_pad_button()
         self.skill_apr2tags:RayaSkillHandler = \
                 self.register_skill(SkillApproachToTags)
         
@@ -83,7 +86,12 @@ class SkillDockToCharger(RayaFSMSkill):
     
     ### HELPERS ###
     
-    
+    def _check_charger_pad_button(self):
+        sensors = self.sensors.get_all_sensors_values()
+        if 'charger_pad' not in sensors:
+            self.abort(*ERROR_NO_CHARGING_PAD)
+
+
     async def _move_fowards_until(self, distance, velocity):
         distace_lidar = await self._get_lidar_distance()
         try:
@@ -118,7 +126,8 @@ class SkillDockToCharger(RayaFSMSkill):
 
     async def _get_charging_button_state(self):
         sensors = self.sensors.get_all_sensors_values()
-        is_charging = int(sensors['charger_pad']) != 0
+        is_charging = False
+        # is_charging = int(sensors['charger_pad']) != 0
         await self.send_feedback({
             'status_msg': 
                 f'Charging button state: \'{is_charging}\''
@@ -181,14 +190,13 @@ class SkillDockToCharger(RayaFSMSkill):
 
     ### ACTIONS ###
     
-    async def setup_actions(self):
+    async def enter_SETUP_ACTIONS(self):
         self._errors_MOVE_BACKWARDS_TO_APPROACH_POINT = 0
         self._errors_MOVE_TO_PRECHARGE = 0
     
     
     async def enter_APPROACH_TO_CHARGER(self):
         self._distance_approach_to_charger = await self._get_lidar_distance()
-        # TODO run Approach Skill
         execute_args={
             'identifier': self.execute_args['identifier']
         }
@@ -200,9 +208,11 @@ class SkillDockToCharger(RayaFSMSkill):
             )
             await self.send_feedback(approach_result)
         except Exception as error:
-            self.log.error('approach execute failed, Exception type:'
-                            f'{type(error)}, Exception: {error}')
-            self.abort(*error)
+            error_msg = (
+                'approach execute failed, Exception type:'
+                f'{type(error)}, Exception: {error}'
+            )
+            self.abort(error_code=-1, error_msg=error_msg)
         await self.skill_apr2tags.execute_finish(
             wait=False
         )
@@ -237,6 +247,9 @@ class SkillDockToCharger(RayaFSMSkill):
     
     
     ### TRANSITIONS ###
+    
+    async def transition_from_SETUP_ACTIONS(self):
+        self.set_state('APPROACH_TO_CHARGER')
     
     
     async def transition_from_APPROACH_TO_CHARGER(self):

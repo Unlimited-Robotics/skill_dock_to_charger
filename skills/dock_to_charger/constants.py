@@ -62,3 +62,4 @@ ERROR_MIN_DISTANCE_REACHED = (6, 'The robot reached the minimun distace approach
 ERROR_BAT_CHARGE_NOT_DETECTED = (7, 'The robot touch the charging pad but no charge is detected')
 ERROR_APPROACH_TAG_MAX_ATTEMPS_REACHED = (8, 'The approach to tags is not posible, max attemps reached')
 ERROR_NO_CHARGER_BUTTON_REACHED =  (9, 'The robot is close to the wall, and the the charger pad was not detected.')
+ERROR_NO_CHARGING_PAD =  (10, 'The robot did not detect the charging pad on the sensors list.')
