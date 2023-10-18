@@ -29,7 +29,7 @@ class RayaApplication(RayaApplicationBase):
 
     async def finish(self):
         self.log.info(f'Finishing skill')
-        await self.skill_apr2tags.execute_finish(
+        await self.skill_dock.execute_finish(
             callback_feedback=self.cb_feedback
         )
         self.log.info(f'App finished')
