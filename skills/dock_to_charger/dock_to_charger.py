@@ -240,7 +240,7 @@ class SkillDockToCharger(RayaFSMSkill):
     
     
     async def transition_from_APPROACH_TO_CHARGER(self):
-        if await self.skill_apr2tags.get_execution_state() == SKILL_STATE.FINISHED:
+        if self.skill_apr2tags.get_execution_state() == SKILL_STATE.FINISHED:
             self.set_state('MOVE_FOWARD_TO_CHARGER')
 
 
