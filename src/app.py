@@ -18,21 +18,26 @@ class RayaApplication(RayaApplicationBase):
 
     async def loop(self):
         self.log.warn(f'Executing skill')
-        execute_result = await self.skill_dock.execute_main(
-            execute_args={
-                'identifier': [0, 1]
-            },
-            callback_feedback=self.cb_feedback
-        )
-        self.log.debug(f'result: {execute_result}')
+        try:
+            execute_result = await self.skill_dock.execute_main(
+                execute_args={
+                    'identifier': [0, 1]
+                },
+                callback_feedback=self.cb_feedback
+            )
+            self.log.debug(f'result: {execute_result}')
+        except Exception as error:
+            self.log.error(f'Error executing skill: {error}')
+        finally:
+            self.finish_app()
 
 
     async def finish(self):
-        self.log.info(f'Finishing skill')
-        await self.skill_dock.execute_finish(
-            callback_feedback=self.cb_feedback
-        )
-        self.log.info(f'App finished')
+        self.log.warn(f'Finishing skill')
+        # await self.skill_dock.execute_finish(
+        #     callback_feedback=self.cb_feedback
+        # )
+        self.log.warn(f'App finished')
 
 
     async def cb_feedback(self, feedback):

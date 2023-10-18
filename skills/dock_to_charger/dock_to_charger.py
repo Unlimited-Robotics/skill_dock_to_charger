@@ -82,8 +82,9 @@ class SkillDockToCharger(RayaFSMSkill):
         
     
     async def finish(self):
-        self.skill_apr2tags.wait_finish()
-    
+        await self.skill_apr2tags.execute_finish(wait=True)
+
+
     ### HELPERS ###
     
     def _check_charger_pad_button(self):
@@ -213,9 +214,6 @@ class SkillDockToCharger(RayaFSMSkill):
                 f'{type(error)}, Exception: {error}'
             )
             self.abort(error_code=-1, error_msg=error_msg)
-        await self.skill_apr2tags.execute_finish(
-            wait=False
-        )
 
 
     async def leave_MOVE_FOWARD_TO_CHARGER(self):
@@ -253,7 +251,7 @@ class SkillDockToCharger(RayaFSMSkill):
     
     
     async def transition_from_APPROACH_TO_CHARGER(self):
-        if self.skill_apr2tags.get_execution_state() == SKILL_STATE.FINISHED:
+        if self.skill_apr2tags.get_execution_state() == SKILL_STATE.EXECUTED:
             self.set_state('MOVE_FOWARD_TO_CHARGER')
 
 
