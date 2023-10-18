@@ -1,20 +1,39 @@
 from raya.application_base import RayaApplicationBase
+from raya.skills import RayaSkillHandler
+from skills.dock_to_charger import SkillDockToCharger
 
 class RayaApplication(RayaApplicationBase):
 
     async def setup(self):
-        # Create local attributes and variables
-        self.i = 0
-        self.log.info(f'Hello from setup()')
+        self.log.warn(f'Registering skill')
+        self.skill_dock:RayaSkillHandler = \
+                self.register_skill(SkillDockToCharger)
+        self.log.warn('Executing setup')
+        await self.skill_dock.execute_setup(
+            setup_args={
+                'working_cameras': ['nav_bottom', 'head_front'],
+                'tags_size': 0.09,
+            }
+        )
 
     async def loop(self):
-        # Loop
-        self.i += 1
-        self.log.info(f'Hello from loop(), i={self.i}')
-        await self.sleep(0.2)
-        if self.i >= 10:
-            self.finish_app()
+        self.log.warn(f'Executing skill')
+        execute_result = await self.skill_dock.execute_main(
+            execute_args={
+                'identifier': [0, 1]
+            },
+            callback_feedback=self.cb_feedback
+        )
+        self.log.debug(f'result: {execute_result}')
+
 
     async def finish(self):
-        # Finishing instructions
-        self.log.warn(f'Hello from finish()')
+        self.log.info(f'Finishing skill')
+        await self.skill_apr2tags.execute_finish(
+            callback_feedback=self.cb_feedback
+        )
+        self.log.info(f'App finished')
+
+
+    async def cb_feedback(self, feedback):
+        self.log.debug(feedback)
